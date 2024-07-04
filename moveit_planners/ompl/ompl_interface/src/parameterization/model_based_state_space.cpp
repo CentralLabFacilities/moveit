@@ -172,6 +172,7 @@ double ompl_interface::ModelBasedStateSpace::distance(const ompl::base::State* s
   if (distance_function_)
     return distance_function_(state1, state2);
   else
+    //TODO LRUEGEME ompl assert?
     return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
 }
 

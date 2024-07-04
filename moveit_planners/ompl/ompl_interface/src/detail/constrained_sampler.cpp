@@ -90,6 +90,9 @@ void ompl_interface::ConstrainedSampler::sampleUniformNear(ob::State* state, con
 {
   if (sampleC(state) || sampleC(state) || sampleC(state))
   {
+    //TODO LRUEGEME ompl assert?
+    space_->enforceBounds(state);
+    //space_->enforceBounds(near);
     double total_d = space_->distance(state, near);
     if (total_d > distance)
     {
@@ -105,6 +108,9 @@ void ompl_interface::ConstrainedSampler::sampleGaussian(ob::State* state, const 
 {
   if (sampleC(state) || sampleC(state) || sampleC(state))
   {
+    //TODO LRUEGEME ompl assert?
+    space_->enforceBounds(state);
+    //space_->enforceBounds(mean);
     double total_d = space_->distance(state, mean);
     double distance = rng_.gaussian(0.0, stdDev);
     if (total_d > distance)

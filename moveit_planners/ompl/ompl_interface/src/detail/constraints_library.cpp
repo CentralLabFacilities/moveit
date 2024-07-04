@@ -122,6 +122,9 @@ public:
     if (index < 0)
       index = rng_.uniformInt(0, max_index_);
 
+    //TODO LRUEGEME ompl assert?
+    //space_->enforceBounds(near);
+    //space_->enforceBounds(state_storage_->getState(index));
     double dist = space_->distance(near, state_storage_->getState(index));
 
     if (dist > distance)
@@ -580,6 +583,9 @@ ompl::base::StateStoragePtr ompl_interface::ConstraintsLibrary::constructConstra
       {
         if (cass->getMetadata(i).first.size() >= options.edges_per_sample)
           continue;
+        //TODO LRUEGEME ompl assert?
+        space->enforceBounds(state_storage->getState(i));
+        //space->enforceBounds(sj);
         double d = space->distance(state_storage->getState(i), sj);
         if (d >= options.max_edge_length)
           continue;
