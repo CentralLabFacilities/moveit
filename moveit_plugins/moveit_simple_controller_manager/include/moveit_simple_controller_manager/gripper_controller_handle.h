@@ -139,12 +139,11 @@ public:
       }
     }
 
+    done_ = false;
+    last_exec_ = moveit_controller_manager::ExecutionStatus::RUNNING;
     controller_action_client_->sendGoal(
         goal, [this](const auto& state, const auto& result) { controllerDoneCallback(state, result); },
         [this] { controllerActiveCallback(); }, [this](const auto& feedback) { controllerFeedbackCallback(feedback); });
-
-    done_ = false;
-    last_exec_ = moveit_controller_manager::ExecutionStatus::RUNNING;
     return true;
   }
 
@@ -175,10 +174,13 @@ private:
   void controllerDoneCallback(const actionlib::SimpleClientGoalState& state,
                               const control_msgs::GripperCommandResultConstPtr& /* result */)
   {
-    if (state == actionlib::SimpleClientGoalState::ABORTED && allow_failure_)
+    if (state == actionlib::SimpleClientGoalState::ABORTED && allow_failure_) 
+    {
+      ROS_WARN_STREAM_NAMED("GripperController", name_ << " ABORTED but allowing failure");
       finishControllerExecution(actionlib::SimpleClientGoalState::SUCCEEDED);
-    else
+    } else {
       finishControllerExecution(state);
+    }
   }
 
   void controllerActiveCallback()

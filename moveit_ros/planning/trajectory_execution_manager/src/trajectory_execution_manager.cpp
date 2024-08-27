@@ -1115,8 +1115,10 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
   if (ensureActiveControllers(context.controllers_))
   {
     // stop if we are already asked to do so
-    if (execution_complete_)
+    if (execution_complete_) {
+      ROS_WARN_NAMED(LOGNAME, "execution_complete_ during executePart startup");
       return false;
+    }
 
     std::vector<moveit_controller_manager::MoveItControllerHandlePtr> handles;
     {
@@ -1142,7 +1144,12 @@ bool TrajectoryExecutionManager::executePart(std::size_t part_index)
           if (!h)
           {
             active_handles_.clear();
+
+            // TODO create sensible structure instead of juggling mutexes
+            time_index_mutex_.lock();
             current_context_ = -1;
+            time_index_mutex_.unlock();
+            
             last_execution_status_ = moveit_controller_manager::ExecutionStatus::ABORTED;
             ROS_ERROR_NAMED(LOGNAME, "No controller handle for controller '%s'. Aborting.",
                             context.controllers_[i].c_str());
