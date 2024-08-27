@@ -116,7 +116,15 @@ public:
   bool waitForExecution(const ros::Duration& timeout = ros::Duration(0)) override
   {
     if (controller_action_client_ && !done_)
-      return controller_action_client_->waitForResult(timeout);
+    {
+      auto ret = controller_action_client_->waitForResult(timeout);
+      while (ret && !done_) {
+        // Workatound for actionlib without https://github.com/ros/actionlib/commit/9beedb8307a181d63cdeedab389712b229de0b4f
+        ROS_WARN_STREAM_NAMED("ActionBasedController", "action finished but DoneCallback not executed, sleeping");
+        ros::Duration(0.005).sleep();
+      }
+      return ret;
+    }
     return true;
   }
 
